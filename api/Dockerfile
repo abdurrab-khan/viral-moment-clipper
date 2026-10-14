@@ -35,6 +35,7 @@ RUN apk add --no-cache \
     yt-dlp
 
 COPY --from=builder ${APP_WORKING_DIR}/dist ./dist
+COPY --from=builder ${APP_WORKING_DIR}/assets ./assets
 COPY --from=builder ${APP_WORKING_DIR}/node_modules ./node_modules
 
 EXPOSE 3000

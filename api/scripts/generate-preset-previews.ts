@@ -21,7 +21,7 @@ import {
 
 const ALL = process.argv.includes('--all');
 
-const STORAGE_ROOT = path.resolve(process.env.STORAGE_ROOT ?? './storage');
+const STORAGE_ROOT = path.resolve(process.env.ASSETS_ROOT ?? './assets');
 const FFMPEG = process.env.FFMPEG_PATH ?? 'ffmpeg';
 const PREVIEW_DIR = path.join(STORAGE_ROOT, 'preset_previews');
 const SOURCE_DEST = path.join(PREVIEW_DIR, '_source.mp4');
@@ -33,7 +33,7 @@ const SOURCE_DEST = path.join(PREVIEW_DIR, '_source.mp4');
  */
 const DEFAULT_SOURCE_CLIP = path.join(
   STORAGE_ROOT,
-  'clips',
+  'preset_previews',
   'color-grading-preview-clip.mp4',
 );
 
@@ -115,12 +115,12 @@ async function main(): Promise<void> {
   );
   for (const preset of presets) {
     const outputAbsolute = await renderPreview(preset, SOURCE_DEST);
-    const relative = path.relative(STORAGE_ROOT, outputAbsolute);
+    const fileName = path.basename(outputAbsolute);
     await prisma.colorGradingPreset.update({
       where: { id: preset.id },
-      data: { previewPath: relative },
+      data: { previewPath: fileName },
     });
-    console.log(`  ${preset.name} -> ${relative}`);
+    console.log(`  ${preset.name} -> ${fileName}`);
   }
   console.log('Done.');
 }

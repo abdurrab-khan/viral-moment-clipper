@@ -6,11 +6,16 @@ import {
   type ColorGradingPreset,
 } from '../../generated/prisma/client.js';
 import { LocalStorageService } from '../storage/providers/local-storage.service.js';
+import path from 'node:path';
 
 export interface PresetPreviewStream {
   stream: Readable;
   sizeBytes: number;
 }
+
+const colorGradingPresetPath = path.resolve(
+  process.env.ASSETS_ROOT ?? './assets/preset_previews',
+);
 
 /** Read access to the shared color grading preset catalog. */
 @Injectable()
@@ -41,7 +46,7 @@ export class ColorGradingService {
         'Preview not generated yet — run pnpm db:generate-previews',
       );
     }
-    const absolute = this.storage.resolve(preset.previewPath);
+    const absolute = path.join(colorGradingPresetPath, preset.previewPath);
     if (!(await this.storage.exists(absolute))) {
       throw new NotFoundException('Preview file is missing from storage');
     }
@@ -51,4 +56,3 @@ export class ColorGradingService {
     };
   }
 }
-
